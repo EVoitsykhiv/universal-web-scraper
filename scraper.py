@@ -12,7 +12,17 @@ if len(sys.argv) < 3:
 url = sys.argv[1]
 mode = sys.argv[2]
 
-response = requests.get(url)
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+}
+
+try:
+    response = requests.get(url, headers=headers, timeout=10)
+    response.raise_for_status()
+except requests.exceptions.RequestException as e:
+    print("Request failed:", e)
+    sys.exit()
+
 soup = BeautifulSoup(response.text, "html.parser")
 
 results = set()
@@ -38,4 +48,4 @@ with open("results.csv", "w", newline="", encoding="utf-8") as f:
     for r in results:
         writer.writerow([r])
 
-print("Saved results to results.csv")
+print(f"Saved {len(results)} results to results.csv")
